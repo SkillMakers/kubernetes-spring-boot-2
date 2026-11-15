@@ -1,0 +1,32 @@
+# Limite du conteneur : 1Gi. JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError
+$ curl -s http://orders/jvm
+{"options":["-XX:MaxRAMPercentage=75","-XX:+ExitOnOutOfMemoryError"],"tasUtiliseMo":32,"processeurs":8,"tasMaxMo":742}
+
+$ curl -s http://orders/memoire?mo=80
+{"retenusMo":80}  HTTP 200
+$ curl -s http://orders/memoire?mo=80
+{"retenusMo":160}  HTTP 200
+$ curl -s http://orders/memoire?mo=80
+{"retenusMo":240}  HTTP 200
+$ curl -s http://orders/memoire?mo=80
+{"retenusMo":320}  HTTP 200
+$ curl -s http://orders/memoire?mo=80
+{"retenusMo":400}  HTTP 200
+$ curl -s http://orders/memoire?mo=80
+{"retenusMo":480}  HTTP 200
+$ curl -s http://orders/memoire?mo=80
+{"retenusMo":560}  HTTP 200
+$ curl -s http://orders/memoire?mo=80
+{"retenusMo":640}  HTTP 200
+$ curl -s http://orders/memoire?mo=80
+  HTTP 000
+  (pas de réponse : la connexion a été coupée)
+
+# Après l'arrêt :
+orders-674998ddcb-76m9z  prêt=false  redémarrages=1  dernier arrêt : Error code 3
+
+$ kubectl logs orders-674998ddcb-76m9z --previous | tail -1
+Terminating due to java.lang.OutOfMemoryError: Java heap space
+
+# Ce que le noyau a tué faute de mémoire pendant cet essai (dmesg) :
+(aucune : le noyau n'a rien tué)

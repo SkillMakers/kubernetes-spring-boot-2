@@ -1,0 +1,26 @@
+# Limite du conteneur : 512Mi. JAVA_TOOL_OPTIONS=-Xmx512m
+$ curl -s http://orders/jvm
+{"tasMaxMo":494,"processeurs":8,"tasUtiliseMo":32,"options":["-Xmx512m"]}
+
+$ curl -s http://orders/memoire?mo=50
+{"retenusMo":50}  HTTP 200
+$ curl -s http://orders/memoire?mo=50
+{"retenusMo":100}  HTTP 200
+$ curl -s http://orders/memoire?mo=50
+{"retenusMo":150}  HTTP 200
+$ curl -s http://orders/memoire?mo=50
+{"retenusMo":200}  HTTP 200
+$ curl -s http://orders/memoire?mo=50
+{"retenusMo":250}  HTTP 200
+$ curl -s http://orders/memoire?mo=50
+  HTTP 000
+  (pas de réponse : la connexion a été coupée)
+
+# Après l'arrêt :
+orders-f7f4b57d7-vdlth  prêt=false  redémarrages=1  dernier arrêt : Error code 137
+
+$ kubectl logs orders-f7f4b57d7-vdlth --previous | tail -1
+2026-11-15T20:22:28.770Z  INFO 1 --- [orders] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+
+# Ce que le noyau a tué faute de mémoire pendant cet essai (dmesg) :
+[ 9612.962291] Memory cgroup out of memory: Killed process 342732 (java) total-vm:4099128kB, anon-rss:517904kB, file-rss:26368kB, shmem-rss:0kB, UID:999 pgtables:1408kB oom_score_adj:952

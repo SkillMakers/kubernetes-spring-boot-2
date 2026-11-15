@@ -1,0 +1,23 @@
+# Limite du conteneur : 512 Mi. Aucune option mémoire donnée à la JVM.
+$ curl -s http://orders/jvm
+{"tasUtiliseMo":31,"processeurs":8,"tasMaxMo":123,"options":[]}
+
+$ curl -s http://orders/memoire?mo=50
+{"retenusMo":50}  HTTP 200
+$ curl -s http://orders/memoire?mo=50
+  HTTP 000
+  (pas de réponse : la connexion a été coupée)
+
+# Une minute plus tard :
+$ kubectl get pods -l app=orders
+NAME                      READY   STATUS    RESTARTS   AGE
+orders-5648f5bf97-g4z2v   0/1     Running   0          114s
+
+orders-5648f5bf97-g4z2v  prêt=false  redémarrages=0  dernier arrêt :  code 
+
+$ kubectl logs -l app=orders | grep -o 'java.lang.OutOfMemoryError.*' | head -1
+java.lang.OutOfMemoryError: Java heap space
+
+$ curl -s -m 5 http://orders/info
+HTTP 000
+(pas de réponse)

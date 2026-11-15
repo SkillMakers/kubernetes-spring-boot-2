@@ -1,0 +1,16 @@
+$ kubectl patch deployment orders --patch-file k8s/liveness-impatiente.yaml
+deployment.apps/orders patched
+
+# 2 min 30 plus tard :
+$ kubectl get pods -l app=orders
+NAME                     READY   STATUS             RESTARTS      AGE
+orders-8f7bf4b99-2g7rd   1/1     Running            0             2m31s
+orders-8f7bf4b99-6r2ng   0/1     CrashLoopBackOff   4 (46s ago)   2m9s
+orders-8f7bf4b99-d58pr   1/1     Running            0             2m20s
+
+$ kubectl get events | grep orders | grep -i liveness | tail -2
+104s        Warning   Unhealthy           pod/orders-8f7bf4b99-6r2ng      Liveness probe failed: Get "http://10.244.0.210:8080/actuator/health/liveness": dial tcp 10.244.0.210:8080: connect: connectio
+47s         Normal    Killing             pod/orders-8f7bf4b99-6r2ng      Container orders failed liveness probe, will be restarted
+
+$ kubectl rollout status deployment/orders --timeout=5s
+error: timed out waiting for the condition

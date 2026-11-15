@@ -1,0 +1,10 @@
+$ kubectl patch deployment orders --patch-file k8s/startup-probe.yaml
+deployment.apps/orders patched
+
+# Mise à jour terminée en 37 s.
+$ kubectl get pods -l app=orders
+NAME                      READY   STATUS    RESTARTS   AGE
+orders-5867d9768d-cgchw   1/1     Running   0          15s
+orders-5867d9768d-cv646   1/1     Running   0          38s
+orders-5867d9768d-tbtgj   1/1     Running   0          25s
+

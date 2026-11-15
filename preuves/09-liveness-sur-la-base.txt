@@ -1,0 +1,20 @@
+$ kubectl patch deployment orders --patch-file k8s/liveness-base.yaml
+deployment.apps/orders patched
+
+$ kubectl get pods -l app=orders
+NAME                      READY   STATUS    RESTARTS   AGE
+orders-756d7b9d74-6dk6m   1/1     Running   0          26s
+orders-756d7b9d74-6xgqf   1/1     Running   0          36s
+orders-756d7b9d74-8rmnl   1/1     Running   0          15s
+
+# La base ne répond plus (ses processus sont gelés).
+# 90 s plus tard :
+$ kubectl get pods -l app=orders
+NAME                      READY   STATUS             RESTARTS      AGE
+orders-756d7b9d74-6dk6m   0/1     CrashLoopBackOff   3 (9s ago)    117s
+orders-756d7b9d74-6xgqf   0/1     CrashLoopBackOff   3 (8s ago)    2m7s
+orders-756d7b9d74-8rmnl   0/1     CrashLoopBackOff   3 (13s ago)   106s
+
+$ curl -s -m 5 http://orders/info   # n'utilise pas la base
+HTTP 000
+(pas de réponse)

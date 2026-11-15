@@ -1,0 +1,13 @@
+# La correction : une startup probe. Tant qu'elle n'a pas réussi, Kubernetes ne lance ni la liveness ni la readiness.
+# Ici, l'application a jusqu'à 2 s x 60 = 120 s pour démarrer ; ensuite, la liveness prend le relais.
+spec:
+  template:
+    spec:
+      containers:
+        - name: orders
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 2
+            failureThreshold: 60

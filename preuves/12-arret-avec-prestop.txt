@@ -1,0 +1,8 @@
+$ kubectl patch deployment orders --patch-file k8s/prestop.yaml
+# Avec preStop : les 3 mêmes mises à jour.
+# Mise à jour 1 :
+   1178 200
+# Mise à jour 2 :
+   1236 200
+# Mise à jour 3 :
+   1151 200

@@ -1,0 +1,13 @@
+# Piège : une liveness probe réglée comme dans beaucoup d'exemples, sans startup probe.
+# Elle commence à vérifier dès le lancement du conteneur, alors que Spring Boot met plusieurs dizaines de secondes à démarrer.
+spec:
+  template:
+    spec:
+      containers:
+        - name: orders
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 3

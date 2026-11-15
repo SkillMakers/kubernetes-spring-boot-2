@@ -1,0 +1,46 @@
+# Base de la démo : un seul pod PostgreSQL, sans volume persistant (ses données disparaissent avec le pod).
+# Une vraie base dans Kubernetes demande un StatefulSet et un volume, ou une base gérée hors du cluster.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:18
+          env:
+            - name: POSTGRES_DB
+              value: orders
+            - name: POSTGRES_USER
+              value: app
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: orders-db
+                  key: password
+          ports:
+            - containerPort: 5432
+          # Prête quand PostgreSQL accepte les connexions, pas dès que le conteneur démarre.
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "app", "-d", "orders"]
+            periodSeconds: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432

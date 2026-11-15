@@ -1,0 +1,22 @@
+# Le manifeste final (requests.cpu remis, et plus de « replicas » : l'HPA décide) :
+$ kubectl get deployment orders
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+orders   3/3     3            3           18m
+
+$ kubectl apply -f k8s/orders-production.yaml
+configmap/orders-config unchanged
+deployment.apps/orders configured
+service/orders unchanged
+
+0 s  voulues=1  prêtes=1
+7 s  voulues=1  prêtes=1
+14 s  voulues=2  prêtes=1
+20 s  voulues=2  prêtes=1
+27 s  voulues=2  prêtes=2
+33 s  voulues=2  prêtes=2
+40 s  voulues=2  prêtes=2
+46 s  voulues=2  prêtes=2
+52 s  voulues=2  prêtes=2
+59 s  voulues=3  prêtes=2
+65 s  voulues=3  prêtes=2
+72 s  voulues=3  prêtes=3

@@ -1,0 +1,11 @@
+# La correction : avant d'envoyer SIGTERM, Kubernetes attend 5 s. Pendant ce temps, le pod est retiré du Service
+# partout, et plus aucune nouvelle requête ne lui arrive. L'action « sleep » n'a besoin d'aucun shell dans l'image.
+spec:
+  template:
+    spec:
+      containers:
+        - name: orders
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 5

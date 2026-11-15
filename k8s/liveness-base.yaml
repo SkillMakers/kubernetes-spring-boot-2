@@ -1,0 +1,12 @@
+# Piège : la liveness pointe sur /actuator/health, qui inclut la base de données.
+spec:
+  template:
+    spec:
+      containers:
+        - name: orders
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 3

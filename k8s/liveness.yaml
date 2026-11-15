@@ -1,0 +1,12 @@
+# La correction : la liveness ne regarde que l'état interne de l'application, jamais ce qui est autour (base, autres services).
+spec:
+  template:
+    spec:
+      containers:
+        - name: orders
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 3

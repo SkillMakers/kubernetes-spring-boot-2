@@ -1,0 +1,89 @@
+# L'application après la vidéo 2 : mémoire de la JVM réglée, trois probes, arrêt propre, et plus de « replicas »
+# (c'est l'HorizontalPodAutoscaler de hpa.yaml qui décide du nombre de copies).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orders-config
+data:
+  APP_MESSAGE: Bonjour
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/orders
+  SPRING_DATASOURCE_USERNAME: app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders
+spec:
+  selector:
+    matchLabels:
+      app: orders
+  template:
+    metadata:
+      labels:
+        app: orders
+    spec:
+      # Délai total d'arrêt : preStop (5 s) + arrêt propre de Spring Boot (30 s au plus par défaut) + 5 s de marge.
+      # Par défaut, 30 s : Kubernetes tuerait le pod avant la fin de l'arrêt propre.
+      terminationGracePeriodSeconds: 40
+      containers:
+        - name: orders
+          image: orders:3.0
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: orders-config
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: orders-db
+                  key: password
+            # Tas à 50 % de la limite : le reste (classes, threads, code compilé) vit hors du tas.
+            # Et un OutOfMemoryError arrête la JVM, pour que Kubernetes la redémarre au lieu de la laisser figée.
+            - name: JAVA_TOOL_OPTIONS
+              value: -XX:MaxRAMPercentage=50 -XX:+ExitOnOutOfMemoryError
+          resources:
+            requests:
+              memory: 384Mi
+              cpu: 250m
+            limits:
+              memory: 512Mi
+          # Jusqu'à 2 s x 60 = 120 s pour démarrer ; tant qu'elle n'a pas réussi, les deux autres attendent.
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 2
+            failureThreshold: 60
+          # Redémarre une JVM figée. Ne regarde jamais la base ni les autres services.
+          # Elle passe par le même Tomcat que le trafic : sous très forte charge, prévoir un timeoutSeconds plus large,
+          # ou un port de gestion séparé (management.server.port).
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 3
+          # Le Service n'envoie du trafic au pod que lorsque Spring Boot se déclare prêt.
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            periodSeconds: 2
+          # 5 s pour que le pod soit retiré du Service partout avant de recevoir SIGTERM.
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders
+spec:
+  selector:
+    app: orders
+  ports:
+    - port: 80
+      targetPort: 8080

@@ -1,0 +1,22 @@
+# Charge de calcul, jusqu'à 6 copies prêtes :
+$ kubectl get deployment orders
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+orders   6/6     6            6           32m
+
+# On réapplique le manifeste, qui contient encore « replicas: 3 » :
+$ kubectl apply -f k8s/orders-production.yaml   # avec « replicas: 3 » ajouté
+deployment.apps/orders configured
+0 s  voulues=3  prêtes=3
+6 s  voulues=6  prêtes=3
+12 s  voulues=6  prêtes=3
+20 s  voulues=6  prêtes=3
+26 s  voulues=6  prêtes=3
+32 s  voulues=6  prêtes=6
+38 s  voulues=6  prêtes=6
+43 s  voulues=6  prêtes=6
+50 s  voulues=6  prêtes=6
+56 s  voulues=6  prêtes=6
+61 s  voulues=6  prêtes=6
+67 s  voulues=6  prêtes=6
+73 s  voulues=6  prêtes=6
+79 s  voulues=6  prêtes=6

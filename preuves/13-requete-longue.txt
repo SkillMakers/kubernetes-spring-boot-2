@@ -1,0 +1,14 @@
+# Une requête de 20 s envoyée au pod orders-65fbbdc5c7-7jw6l, qu'on arrête 2 s plus tard :
+$ kubectl delete pod orders-65fbbdc5c7-7jw6l
+pod "orders-65fbbdc5c7-7jw6l" deleted from default namespace
+$ cat /tmp/lent
+{"fini":true,"pod":"orders-65fbbdc5c7-7jw6l"}  HTTP 200 au bout de 20.037013 s
+# Arrêt du pod : 19 s.
+
+# Une requête de 45 s envoyée au pod orders-65fbbdc5c7-bptdn, qu'on arrête 2 s plus tard :
+$ kubectl delete pod orders-65fbbdc5c7-bptdn
+pod "orders-65fbbdc5c7-bptdn" deleted from default namespace
+$ cat /tmp/lent
+  HTTP 000 au bout de 32.791692 s
+# Arrêt du pod : 32 s.
+

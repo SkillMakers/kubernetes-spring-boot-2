@@ -1,0 +1,12 @@
+# Cluster local de la démo : un seul nœud (contrôle et travail), dans Docker. Un cluster de 3 nœuds avec
+# 3 copies de l'appli ne tenait pas dans 16 Go de RAM à côté du reste.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+# La VM de Docker Desktop (WSL 2) tourne encore en cgroup v1, que le kubelet refuse par défaut
+# depuis Kubernetes 1.35 : on l'autorise pour ce cluster de démo uniquement.
+kubeadmConfigPatches:
+  - |
+    kind: KubeletConfiguration
+    failCgroupV1: false
+nodes:
+  - role: control-plane

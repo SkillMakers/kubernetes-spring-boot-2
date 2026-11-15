@@ -1,0 +1,46 @@
+$ kubectl get hpa orders
+NAME     REFERENCE           TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+orders   Deployment/orders   cpu: 5%/60%   2         6         3          3m41s
+
+# Charge de calcul : 3 boucles de requêtes sur /calcul. Relevé toutes les 5 s :
+0 s  cpu: 5%/60% copies=3  prêtes=3
+7 s  cpu: 5%/60% copies=3  prêtes=3
+14 s  cpu: 5%/60% copies=3  prêtes=3
+20 s  cpu: 50%/60% copies=3  prêtes=3
+27 s  cpu: 50%/60% copies=3  prêtes=3
+34 s  cpu: 346%/60% copies=3  prêtes=3
+41 s  cpu: 346%/60% copies=3  prêtes=3
+49 s  cpu: 378%/60% copies=6  prêtes=3
+56 s  cpu: 378%/60% copies=6  prêtes=6
+64 s  cpu: 198%/60% copies=6  prêtes=6
+71 s  cpu: 198%/60% copies=6  prêtes=6
+78 s  cpu: 198%/60% copies=6  prêtes=6
+85 s  cpu: 131%/60% copies=6  prêtes=6
+92 s  cpu: 131%/60% copies=6  prêtes=6
+98 s  cpu: 199%/60% copies=6  prêtes=6
+105 s  cpu: 199%/60% copies=6  prêtes=6
+112 s  cpu: 190%/60% copies=6  prêtes=6
+119 s  cpu: 190%/60% copies=6  prêtes=6
+126 s  cpu: 184%/60% copies=6  prêtes=6
+133 s  cpu: 184%/60% copies=6  prêtes=6
+140 s  cpu: 179%/60% copies=6  prêtes=6
+146 s  cpu: 179%/60% copies=6  prêtes=6
+
+# Fin de la charge. Relevé à chaque changement :
+1 s  cpu: 196%/60% copies=6
+23 s  cpu: 197%/60% copies=6
+34 s  cpu: 49%/60% copies=6
+55 s  cpu: 3%/60% copies=6
+131 s  cpu: 2%/60% copies=6
+142 s  cpu: 5%/60% copies=6
+153 s  cpu: 3%/60% copies=6
+293 s  cpu: 2%/60% copies=6
+337 s  cpu: 2%/60% copies=5
+348 s  cpu: 3%/60% copies=2
+380 s  cpu: 2%/60% copies=2
+391 s  cpu: 3%/60% copies=2
+413 s  cpu: 2%/60% copies=2
+424 s  cpu: 1%/60% copies=2
+445 s  cpu: 2%/60% copies=2
+456 s  cpu: 1%/60% copies=2
+467 s  cpu: 3%/60% copies=2

@@ -1,0 +1,10 @@
+# Sans preStop : 3 mises à jour (rollout restart), avec des requêtes en continu.
+# Mise à jour 1 :
+     11 000
+    940 200
+# Mise à jour 2 :
+     13 000
+   1357 200
+# Mise à jour 3 :
+     14 000
+   1187 200

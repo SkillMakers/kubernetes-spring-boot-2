@@ -1,0 +1,7 @@
+# Application démarrée, aucune requête. Le tas, vu par la JVM :
+$ curl -s http://orders/jvm
+{"processeurs":8,"tasUtiliseMo":33,"options":[],"tasMaxMo":123}
+
+# La mémoire réellement occupée par le conteneur (groupe de contrôle du pod) :
+$ kubectl exec orders-5648f5bf97-hwnvf -- sh -c 'cat /sys/fs/cgroup/memory.current 2>/dev/null || grep -w total_rss /sys/fs/cgroup/memory/memory.stat'
+total_rss 222883840  (213 Mo)

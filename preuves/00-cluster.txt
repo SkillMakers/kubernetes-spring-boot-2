@@ -1,0 +1,9 @@
+$ kubectl version
+Client Version: v1.37.0
+Kustomize Version: v5.8.1
+Server Version: v1.37.0
+
+$ kubectl get nodes
+NAME                 STATUS   ROLES           AGE    VERSION
+demo-control-plane   Ready    control-plane   151m   v1.37.0
+

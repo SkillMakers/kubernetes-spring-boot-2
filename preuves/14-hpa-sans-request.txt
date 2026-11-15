@@ -1,0 +1,10 @@
+# Le Deployment ne demande pas de processeur (pas de resources.requests.cpu) :
+$ kubectl apply -f k8s/hpa.yaml
+horizontalpodautoscaler.autoscaling/orders created
+
+$ kubectl get hpa orders
+NAME     REFERENCE           TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+orders   Deployment/orders   cpu: <unknown>/60%   2         6         3          76s
+
+$ kubectl describe hpa orders | grep ScalingActive
+  ScalingActive  False   FailedGetResourceMetric  the HPA was unable to compute the replica count: failed to get cpu utilization: missing request for cpu in container orders of Pod orders-6f6d455b75-7

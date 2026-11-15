@@ -1,0 +1,29 @@
+$ kubectl patch deployment orders --patch-file k8s/liveness.yaml
+# (déjà appliqué, application redémarrée)
+$ kubectl get pods -l app=orders
+NAME                      READY   STATUS    RESTARTS   AGE
+orders-675bc8d6f6-8pxkr   1/1     Running   0          34s
+orders-675bc8d6f6-9cp6t   1/1     Running   0          50s
+orders-675bc8d6f6-vlrrk   1/1     Running   0          15s
+
+# La base ne répond plus.
+# 90 s plus tard :
+$ kubectl get pods -l app=orders
+NAME                      READY   STATUS    RESTARTS   AGE
+orders-675bc8d6f6-8pxkr   1/1     Running   0          2m5s
+orders-675bc8d6f6-9cp6t   1/1     Running   0          2m21s
+orders-675bc8d6f6-vlrrk   1/1     Running   0          106s
+
+$ curl -s -m 5 http://orders/actuator/health/liveness
+HTTP 200
+$ curl -s -m 5 http://orders/actuator/health/readiness
+HTTP 200
+$ curl -s -m 5 http://orders/info
+HTTP 200
+$ curl -s -m 5 http://orders/commandes
+HTTP 000
+(pas de réponse en 5 s)
+
+# La base revient :
+$ curl -s http://orders/commandes
+[]  HTTP 200

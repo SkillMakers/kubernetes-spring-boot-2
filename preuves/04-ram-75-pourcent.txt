@@ -1,0 +1,30 @@
+# Limite du conteneur : 512Mi. JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=75
+$ curl -s http://orders/jvm
+{"processeurs":8,"tasMaxMo":371,"options":["-XX:MaxRAMPercentage=75"],"tasUtiliseMo":32}
+
+$ curl -s http://orders/memoire?mo=40
+{"retenusMo":40}  HTTP 200
+$ curl -s http://orders/memoire?mo=40
+{"retenusMo":80}  HTTP 200
+$ curl -s http://orders/memoire?mo=40
+{"retenusMo":120}  HTTP 200
+$ curl -s http://orders/memoire?mo=40
+{"retenusMo":160}  HTTP 200
+$ curl -s http://orders/memoire?mo=40
+{"retenusMo":200}  HTTP 200
+$ curl -s http://orders/memoire?mo=40
+{"retenusMo":240}  HTTP 200
+$ curl -s http://orders/memoire?mo=40
+{"retenusMo":280}  HTTP 200
+$ curl -s http://orders/memoire?mo=40
+  HTTP 000
+  (pas de réponse : la connexion a été coupée)
+
+# Après l'arrêt :
+orders-7cd97b6658-j8smk  prêt=false  redémarrages=1  dernier arrêt : Error code 137
+
+$ kubectl logs orders-7cd97b6658-j8smk --previous | tail -1
+2026-11-15T20:22:58.886Z  INFO 1 --- [orders] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+# Ce que le noyau a tué faute de mémoire pendant cet essai (dmesg) :
+[ 9644.090623] Memory cgroup out of memory: Killed process 344089 (java) total-vm:3967628kB, anon-rss:517948kB, file-rss:26320kB, shmem-rss:0kB, UID:999 pgtables:1376kB oom_score_adj:952
